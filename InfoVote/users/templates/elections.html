@@ -1,0 +1,105 @@
+{% load static %}
+{% load humanize %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election Requirements Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-blue-400 border-gray-200">
+        <div class="max-w-screen-xl flex items-center justify-between mx-auto p-4">
+            <a href="{% url 'home' %}" class="flex items-center">
+                <span class="self-center text-2xl font-semibold text-white">VoteRequirements</span>
+            </a>
+            <div class="flex items-center">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'admin:index' %}" class="text-white hover:text-gray-200 mr-4">Admin Panel</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Form -->
+    <div class="max-w-screen-xl mx-auto p-4">
+        <form method="GET" action="{% url 'past_elections' %}" class="mb-6 flex space-x-4">
+            <input type="text" name="search" value="{{ search_query }}" placeholder="Search elections..." class="border rounded-md p-2 w-full md:w-auto">
+            
+            <select name="type" class="border rounded-md p-2">
+                <option value="">All Types</option>
+                {% for type_code, type_name in election_types %}
+                    <option value="{{ type_code }}" {% if selected_type == type_code %}selected{% endif %}>
+                        {{ type_name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <select name="year" class="border rounded-md p-2">
+                <option value="">All Years</option>
+                {% for year in available_years %}
+                    <option value="{{ year }}" {% if selected_year == year|stringformat:"i" %}selected{% endif %}>
+                        {{ year }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300">Search</button>
+        </form>
+
+        <!-- Display Total Results -->
+        <p>Found {{ total_results }} results</p>
+
+        <!-- Elections Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for election in elections %}
+            <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300">
+                <!-- Election Details -->
+                <h3 class="text-xl font-bold text-gray-800 mb-2">{{ election.title }}</h3>
+                <p>Date: {{ election.start_date|date:"F j, Y" }}</p> 
+                <p>Total Voters: {{ election.total_voters }}</p> 
+                
+                <!-- Candidate Name (Assuming you have a related field or method) -->
+                {% if election.candidate_name %}
+                    <p>Candidate: {{ election.candidate_name }}</p> 
+                {% endif %}
+
+                <!-- Requirements Button -->
+                <button onclick="showRequirements('{{ election.id }}')" 
+                        class="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-300 mt-4">
+                    View Requirements
+                </button>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-8">
+                <p class="text-gray-600 text-lg">No past elections found.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination (if needed) -->
+        {% if is_paginated %}
+            <div class="pagination mt-6 flex justify-center space-x-4">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_year %}&year={{ selected_year }}{% endif %}" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Previous</a>
+                {% endif %}
+                
+                <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_year %}&year={{ selected_year }}{% endif %}" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Next</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Requirements Modal -->
+    <!-- Modal code remains unchanged -->
+
+    <!-- Include your JavaScript functions here -->
+
+</body>
+</html>

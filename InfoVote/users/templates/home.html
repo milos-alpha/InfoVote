@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election Requirements Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-blue-400 border-gray-200 dark:bg-gray-900">
+        <div class="max-w-screen-xl flex items-center justify-between mx-auto p-4">
+            <a href="{% url 'home' %}" class="flex items-center">
+                <span class="self-center text-2xl font-semibold text-white">VoteRequirements</span>
+            </a>
+            <div class="flex space-x-4">
+                <a href="{% url 'login' %}" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300">Login</a>
+                <a href="{% url 'register' %}" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-300">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Carousel Section -->
+    <div id="default-carousel" class="relative w-full" data-carousel="slide">
+        <!-- Carousel wrapper -->
+        <div class="relative h-56 overflow-hidden md:h-96">
+            {% for image in carousel_images %}
+            <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                <img src="{{ image.url }}" class="absolute block w-full h-full object-cover" alt="Voting Image {{ forloop.counter }}">
+                <div class="absolute inset-0 bg-black opacity-40"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <h2 class="text-white text-4xl font-bold text-center">Know Your Voting Requirements</h2>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Carousel controls -->
+        <button type="button" class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
+            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50">
+                <svg class="w-4 h-4 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+                </svg>
+            </span>
+        </button>
+        <button type="button" class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
+            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50">
+                <svg class="w-4 h-4 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1l4 4-4 4"/>
+                </svg>
+            </span>
+        </button>
+    </div>
+
+    <!-- Requirements Section -->
+    <div class="max-w-screen-xl mx-auto p-4">
+        <h2 class="text-2xl font-bold mb-6">Voting Requirements</h2>
+
+
+        <!-- If you want to display requirements separately, you can keep this section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for requirement in requirements %}
+            <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300">
+                <div class="aspect-w-1 aspect-h-1 mb-4">
+                    {% if requirement.icon %}
+                        <img src="{{ requirement.icon.url }}" alt="{{ requirement.name }}" class="object-contain w-full h-48">
+                    {% else %}
+                        <div class="bg-gray-200 w-full h-48 flex items-center justify-center">
+                            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                    {% endif %}
+                </div>
+                <h3 class="text-lg font-semibold mb-2">{{ requirement.name }}</h3>
+                <p class="text-gray-600 mb-4">{{ requirement.description }}</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500">Priority: {{ requirement.priority }}</span>
+                    <a href="{{ requirement.learn_more_url }}" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-300">Learn More</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="w-full mx-auto p-4 flex-col flex items-center justify-center h-[100vh]">
+        <h2 class="text-2xl font-bold mb-6">Cameroon Voting History</h2>
+        <!-- Include elections.html component here -->
+        {% include 'elections.html' %}
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+
+</body>
+</html>
